@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SelFeel 予約コンシェルジュ</title>
+    <style>
+        /* デザイン：サロンの雰囲気に合わせたクリーンなスタイル */
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            background-color: #f9f7f2;
+            color: #4a4a4a;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #b5a47e; /* ゴールド系 */
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em;
+        }
+        .step-box {
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .step-num {
+            background-color: #b5a47e;
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #b5a47e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #96855d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SelFeel 予約コンシェルジュ</h1>
+
+    <form id="reservationForm">
+        <div class="step-box">
+            <div><span class="step-num">1</span>お客様情報をご入力ください</div>
+            <input type="text" name="name" placeholder="お名前" required>
+            <select name="course" required>
+                <option value="">コースを選択してください</option>
+                <option value="60min">スタンダード 60分</option>
+                <option value="90min">プレミアム 90分</option>
+                <option value="120min">ラグジュアリー 120分</option>
+            </select>
+        </div>
+
+        <button type="submit" id="submitBtn">予約を確認する</button>
+    </form>
+</div>
+
+<script>
+    // ★重要：ここにメモしたGASのURLを貼り付けてください
+    const GAS_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbx1xQzdKXhJaYZnwtHVvu_hS64Lr--hYpfWO3PH6dn_kFf2OVOlZPNG6bYTJa_z5Nrr/exec/exec";
+
+    document.getElementById('reservationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "送信中...";
+        btn.disabled = true;
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => { data[key] = value });
+
+        // GASへデータを飛ばす処理
+        fetch(GAS_URL, {
+            method: "POST",
+            body: JSON.stringify(data),
+            mode: "no-cors" // これによりブラウザのセキュリティ制限を回避します
+        }).then(() => {
+            alert("ありがとうございます。送信が完了しました。");
+            btn.innerText = "送信完了";
+        }).catch(err => {
+            alert("エラーが発生しました。");
+            btn.disabled = false;
+            btn.innerText = "再試行する";
+        });
+    });
+</script>
+
+</body>
+</html>
