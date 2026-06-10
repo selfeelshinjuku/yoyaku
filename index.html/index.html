@@ -1,126 +1,2135 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SelFeel 予約コンシェルジュ</title>
-    <style>
-        /* デザイン：サロンの雰囲気に合わせたクリーンなスタイル */
-        body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-            background-color: #f9f7f2;
-            color: #4a4a4a;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 500px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        h1 {
-            text-align: center;
-            color: #b5a47e; /* ゴールド系 */
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            letter-spacing: 0.1em;
-        }
-        .step-box {
-            border: 1px solid #eee;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .step-num {
-            background-color: #b5a47e;
-            color: white;
-            width: 24px;
-            height: 24px;
-            display: inline-block;
-            text-align: center;
-            border-radius: 50%;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-        select, input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: #b5a47e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: #96855d;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>幕が上がるとき</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crimson: #7a1c2e;
+    --crimson-deep: #4a0e1a;
+    --crimson-light: #c94060;
+    --gold: #a8895a;
+    --gold-light: #c9a96a;
+    --ivory: #f5f0e8;
+    --ivory-warm: #ede8dc;
+    --charcoal: #1e1c18;
+    --charcoal-mid: #2e2b24;
+    --text-main: #2a2520;
+    --text-sub: #5a5248;
+    --text-muted: #8a8278;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--charcoal);
+    background-color: #1e1c18;
+    color: var(--ivory);
+    font-family: 'Noto Serif JP', serif;
+    line-height: 1.9;
+    overflow-x: hidden;
+  }
+
+  /* ===== COVER ===== */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 60%, #5a0e20 0%, #2a0810 40%, var(--charcoal) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 60px 20px;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.012) 3px,
+      rgba(255,255,255,0.012) 4px
+    );
+    pointer-events: none;
+  }
+
+  .curtain-left, .curtain-right {
+    position: absolute;
+    top: 0;
+    width: 18%;
+    height: 100%;
+    background: linear-gradient(to bottom, #6a1020 0%, #3a0810 100%);
+    opacity: 0.7;
+  }
+  .curtain-left { left: 0; transform-origin: left; clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
+  .curtain-right { right: 0; transform-origin: right; clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%); }
+
+  .cover-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: fadeInUp 1.6s ease both;
+  }
+
+  .cover-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
+    color: var(--gold);
+    letter-spacing: 0.25em;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+  }
+
+  .cover-title {
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--ivory);
+    line-height: 1.2;
+    text-shadow: 0 0 60px rgba(169,60,80,0.5);
+    margin-bottom: 1.5rem;
+  }
+
+  .cover-subtitle {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--gold-light);
+    letter-spacing: 0.2em;
+    font-weight: 300;
+    margin-bottom: 3rem;
+  }
+
+  .cover-divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 auto 3rem;
+  }
+
+  .cover-tagline {
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    color: rgba(245,240,232,0.55);
+    font-style: italic;
+    letter-spacing: 0.08em;
+    line-height: 2;
+    max-width: 420px;
+    margin: 0 auto 3.5rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(245,240,232,0.35);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    animation: pulse 2.5s ease infinite;
+  }
+  .scroll-hint::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: drip 2.5s ease infinite;
+  }
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc {
+    background: var(--charcoal-mid);
+    padding: 80px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(169,137,90,0.2);
+    border-bottom: 1px solid rgba(169,137,90,0.2);
+  }
+
+  .toc-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 2.5rem;
+    opacity: 0.8;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .toc-list li a {
+    color: rgba(245,240,232,0.7);
+    text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    transition: color 0.3s;
+  }
+  .toc-list li a:hover { color: var(--gold-light); }
+  .toc-list li a .ch-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.85rem;
+    min-width: 60px;
+    opacity: 0.7;
+  }
+
+  /* ===== CHAPTER ===== */
+  .chapter {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 28px 80px;
+    border-bottom: 1px solid rgba(169,137,90,0.12);
+    background: var(--charcoal);
+  }
+
+  .chapter-header {
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+
+  .chapter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .chapter-title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 500;
+    color: var(--ivory);
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .chapter-title-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: rgba(169,137,90,0.6);
+    letter-spacing: 0.2em;
+  }
+
+  .chapter-divider {
+    width: 50px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 2rem auto 0;
+  }
+
+  /* ===== PROSE ===== */
+  .prose {
+    color: rgba(245,240,232,0.88);
+    font-size: clamp(1.1rem, 3.5vw, 1.25rem);
+    line-height: 2.15;
+  }
+
+  .prose p {
+    margin-bottom: 1.8em;
+    text-indent: 1em;
+  }
+
+  .prose p.no-indent { text-indent: 0; }
+
+  .prose .scene-break {
+    text-align: center;
+    color: var(--gold);
+    opacity: 0.5;
+    margin: 2.5em 0;
+    letter-spacing: 0.5em;
+    font-size: 0.8rem;
+    text-indent: 0;
+  }
+
+  .prose .dialogue {
+    text-indent: 0;
+    padding-left: 0;
+  }
+
+  .prose .inner-voice {
+    font-style: italic;
+    color: rgba(245,240,232,0.6);
+    text-indent: 1em;
+    border-left: 2px solid rgba(169,137,90,0.3);
+    padding-left: 1.2em;
+    margin-left: 0.5em;
+  }
+
+  .prose .scene-heading {
+    text-align: center;
+    color: var(--gold-light);
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    margin: 3em 0 2em;
+    text-indent: 0;
+    opacity: 0.7;
+  }
+
+  .prose strong {
+    color: var(--ivory);
+    font-weight: 500;
+  }
+
+  /* ===== EPILOGUE ===== */
+  .epilogue {
+    background: radial-gradient(ellipse at 50% 40%, #3a0e1a 0%, var(--charcoal) 70%);
+    padding: 100px 28px;
+    text-align: center;
+  }
+
+  .epilogue-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .epilogue-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .epilogue-title {
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    color: var(--ivory);
+    letter-spacing: 0.12em;
+    margin-bottom: 3rem;
+    line-height: 1.5;
+  }
+
+  .epilogue .prose {
+    text-align: left;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--charcoal);
+    border-top: 1px solid rgba(169,137,90,0.15);
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .footer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
+
+  .footer-sub {
+    font-size: 0.8rem;
+    color: rgba(245,240,232,0.3);
+    letter-spacing: 0.2em;
+  }
+
+  /* ===== CHARACTERS ===== */
+  .characters {
+    background: var(--charcoal-mid);
+    padding: 100px 28px;
+    border-top: 1px solid rgba(169,137,90,0.15);
+  }
+  .characters-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+  .section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+    margin-bottom: 1.2rem;
+  }
+  .section-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 500;
+    color: var(--ivory);
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  .section-divider {
+    width: 50px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 1.5rem auto 3rem;
+  }
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    text-align: left;
+    margin-top: 1rem;
+  }
+  .char-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(169,137,90,0.15);
+    border-radius: 2px;
+    padding: 2rem 1.8rem;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: border-color 0.3s;
+  }
+  .char-card:hover { border-color: rgba(169,137,90,0.35); }
+  .char-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.8rem;
+    opacity: 0.4; line-height: 1;
+  }
+  .char-name {
+    font-size: 1.15rem; color: var(--ivory);
+    font-weight: 500; letter-spacing: 0.08em;
+    display: flex; flex-direction: column; gap: 0.3rem;
+  }
+  .char-name-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: rgba(169,137,90,0.6);
+    letter-spacing: 0.15em; font-weight: 300;
+  }
+  .char-role {
+    font-size: 0.8rem; color: var(--gold);
+    letter-spacing: 0.1em; opacity: 0.7;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(169,137,90,0.15);
+  }
+  .char-desc { font-size: 1rem; line-height: 1.9; color: rgba(245,240,232,0.72); }
+  .char-desc p { margin-bottom: 0.8em; text-indent: 0; }
+  .char-desc p:last-child { margin-bottom: 0; }
+
+  /* ===== SPINOFF ===== */
+  .spinoff {
+    background: radial-gradient(ellipse at 50% 80%, #1a0a14 0%, var(--charcoal) 70%);
+    padding: 100px 28px;
+    border-top: 1px solid rgba(169,137,90,0.12);
+  }
+  .spinoff-inner { max-width: 680px; margin: 0 auto; text-align: center; }
+  .spinoff-prose { text-align: left; margin-top: 1rem; }
+
+  /* ===== AFTERWORD ===== */
+  .afterword {
+    background: var(--charcoal-mid);
+    padding: 100px 28px;
+    border-top: 1px solid rgba(169,137,90,0.12);
+  }
+  .afterword-inner { max-width: 680px; margin: 0 auto; text-align: center; }
+  .afterword-prose { text-align: left; margin-top: 1rem; }
+
+  /* ===== CHAPTER VISUALS ===== */
+  .chapter-visual {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 4rem;
+    border-radius: 2px;
+  }
+
+  /* 序章：無数の光る扉 */
+  .visual-prologue {
+    background: radial-gradient(ellipse at 50% 100%, #1a0830 0%, #0a0614 100%);
+  }
+  .visual-prologue .door {
+    position: absolute;
+    bottom: 0;
+    width: 28px;
+    border-radius: 3px 3px 0 0;
+    transform-origin: bottom center;
+  }
+  .visual-prologue::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 110%, rgba(169,137,90,0.18) 0%, transparent 65%);
+  }
+
+  /* 第一章：紅い絨毯の劇場 */
+  .visual-ch1 {
+    background: linear-gradient(to bottom, #1a0810 0%, #3a0c18 35%, #6a1828 55%, #8a1c18 70%, #7a0e10 100%);
+    perspective: 600px;
+  }
+  .visual-ch1 .carpet {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%) rotateX(55deg);
+    transform-origin: bottom center;
+    width: 160px; height: 200px;
+    background: linear-gradient(to top,
+      #7a0e18 0%, #9a1828 20%, #b02030 50%, #9a1828 80%, #6a0e18 100%
+    );
+    box-shadow:
+      0 0 60px rgba(180,20,40,0.6),
+      0 0 120px rgba(120,10,20,0.4);
+  }
+  .visual-ch1 .carpet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg, transparent, transparent 8px,
+      rgba(255,255,255,0.04) 8px, rgba(255,255,255,0.04) 9px
+    );
+  }
+  .visual-ch1 .curtain-l, .visual-ch1 .curtain-r {
+    position: absolute; top: 0; bottom: 0; width: 22%;
+    background: linear-gradient(to bottom, #5a0c1a 0%, #2a0610 100%);
+  }
+  .visual-ch1 .curtain-l { left: 0; clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%); }
+  .visual-ch1 .curtain-r { right: 0; clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
+  .visual-ch1 .chandelier {
+    position: absolute; top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 2px; height: 40px;
+    background: linear-gradient(to bottom, #a8895a, transparent);
+  }
+  .visual-ch1 .chandelier::after {
+    content: '';
+    position: absolute; bottom: -18px; left: 50%;
+    transform: translateX(-50%);
+    width: 36px; height: 18px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(201,169,106,0.9) 0%, rgba(168,137,90,0.5) 50%, transparent 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(201,169,106,0.6);
+  }
+  .visual-ch1 .glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 80%, rgba(120,20,30,0.5) 0%, transparent 70%);
+  }
+
+  /* 第二章：舞台の光景 */
+  .visual-ch2 {
+    background: #0e0c0a;
+    overflow: hidden;
+  }
+  .visual-ch2 .spotlight {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+  .visual-ch2 .sp1 {
+    width: 90px; height: 90px;
+    background: radial-gradient(circle, rgba(255,240,200,0.5) 0%, rgba(200,160,80,0.2) 50%, transparent 100%);
+    top: 10px; left: 12%;
+  }
+  .visual-ch2 .sp2 {
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, rgba(200,230,255,0.35) 0%, rgba(100,160,220,0.15) 50%, transparent 100%);
+    top: 20px; left: 38%;
+  }
+  .visual-ch2 .sp3 {
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(255,220,180,0.4) 0%, rgba(200,140,60,0.15) 50%, transparent 100%);
+    top: 5px; right: 15%;
+  }
+  .visual-ch2 .stage-floor {
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 50px;
+    background: linear-gradient(to top, #1a1208, #0e0c0a);
+    border-top: 1px solid rgba(169,137,90,0.2);
+  }
+  .visual-ch2 .beam {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(255,240,180,0.3), transparent);
+    transform-origin: top center;
+  }
+  .visual-ch2::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, #0e0c0a 100%);
+  }
+
+  /* 第三章：舞台袖の薄暗い光 */
+  .visual-ch3 {
+    background: #080608;
+  }
+  .visual-ch3 .wing-light {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 45%;
+    background: linear-gradient(to left,
+      rgba(169,137,90,0.25) 0%,
+      rgba(169,137,90,0.08) 40%,
+      transparent 100%
+    );
+  }
+  .visual-ch3 .figure {
+    position: absolute;
+    bottom: 0;
+    width: 28px;
+    background: rgba(20,15,12,0.95);
+    border-radius: 14px 14px 0 0;
+  }
+  .visual-ch3 .fig1 { left: 58%; height: 130px; width: 26px; }
+  .visual-ch3 .fig2 { left: 68%; height: 100px; width: 24px; opacity: 0.7; }
+  .visual-ch3 .fig3 { left: 76%; height: 80px; width: 22px; opacity: 0.45; }
+  .visual-ch3 .floor-line {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(169,137,90,0.3), transparent);
+  }
+  .visual-ch3::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 65% 50%, rgba(80,40,20,0.3) 0%, transparent 60%);
+  }
+
+  /* 第四章：黒と金の衣装 */
+  .visual-ch4 {
+    background: radial-gradient(ellipse at 50% 50%, #1a1408 0%, #080608 100%);
+  }
+  .visual-ch4 .coat {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 160px;
+    background: linear-gradient(135deg, #1a1010 0%, #0a0808 50%, #161010 100%);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+  }
+  .visual-ch4 .coat::after {
+    content: '';
+    position: absolute;
+    top: 15%; left: 10%; right: 10%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(169,137,90,0.6), transparent);
+  }
+  .visual-ch4 .gold-edge {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 84px; height: 164px;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    background: transparent;
+    border: 1px solid rgba(169,137,90,0.35);
+    filter: blur(0.5px);
+  }
+  .visual-ch4 .aura {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 85%, rgba(169,137,90,0.15) 0%, transparent 55%);
+  }
+
+  /* 第五章：半開きの扉と薄明かり */
+  .visual-ch5 {
+    background: #050408;
+  }
+  .visual-ch5 .door-frame {
+    position: absolute;
+    top: 20px; bottom: 0;
+    left: 50%; transform: translateX(-50%);
+    width: 90px;
+    border: 2px solid rgba(80,60,40,0.7);
+    border-bottom: none;
+    border-radius: 2px 2px 0 0;
+  }
+  .visual-ch5 .door-panel {
+    position: absolute;
+    top: 20px; bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) perspective(200px) rotateY(-35deg);
+    transform-origin: left center;
+    width: 88px;
+    background: linear-gradient(135deg, #1a1008 0%, #0e0c08 100%);
+    border: 1px solid rgba(80,60,30,0.5);
+    border-bottom: none;
+  }
+  .visual-ch5 .door-light {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: calc(50% + 10px);
+    width: 120px;
+    background: linear-gradient(to right,
+      rgba(201,169,106,0.35) 0%,
+      rgba(201,169,106,0.12) 40%,
+      transparent 100%
+    );
+    filter: blur(4px);
+  }
+  .visual-ch5 .floor-glow {
+    position: absolute;
+    bottom: 0; height: 30px;
+    left: calc(50% + 5px); right: 0;
+    background: linear-gradient(to top, rgba(169,137,90,0.12), transparent);
+  }
+  .visual-ch5::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 55% 50%, rgba(30,18,8,0.4) 0%, #050408 70%);
+  }
+
+  /* 終章：幕が上がる光 */
+  .visual-epilogue {
+    background: #080410;
+    overflow: hidden;
+  }
+  .visual-epilogue .curtain-rise-l {
+    position: absolute;
+    top: -10px; left: 0; bottom: 0;
+    width: 40%;
+    background: linear-gradient(to right, #5a0c1a 0%, #3a0810 80%, transparent 100%);
+    clip-path: polygon(0 0, 85% 0, 60% 100%, 0 100%);
+    animation: riseL 4s ease-in-out infinite alternate;
+  }
+  .visual-epilogue .curtain-rise-r {
+    position: absolute;
+    top: -10px; right: 0; bottom: 0;
+    width: 40%;
+    background: linear-gradient(to left, #5a0c1a 0%, #3a0810 80%, transparent 100%);
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 40% 100%);
+    animation: riseR 4s ease-in-out infinite alternate;
+  }
+  .visual-epilogue .stage-glow {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 60%; height: 60%;
+    background: radial-gradient(ellipse at 50% 100%,
+      rgba(201,169,106,0.5) 0%,
+      rgba(169,137,90,0.2) 35%,
+      transparent 70%
+    );
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+  .visual-epilogue .rays {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; height: 100%;
+  }
+
+  @keyframes riseL {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12px); }
+  }
+  @keyframes riseR {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12px); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+  }
+
+  @keyframes drip {
+    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    60% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--crimson-light), var(--gold));
+    z-index: 100;
+    transition: width 0.1s;
+    width: 0%;
+  }
+
+  /* ===== BACK TO TOP ===== */
+  .back-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 44px;
+    height: 44px;
+    background: rgba(122,28,46,0.8);
+    border: 1px solid rgba(169,137,90,0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 99;
+    color: var(--gold);
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+  .back-top.visible { opacity: 1; }
+
+  @media (max-width: 600px) {
+    .chapter { padding: 70px 22px 60px; }
+    .cover-title { letter-spacing: 0.1em; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>SelFeel 予約コンシェルジュ</h1>
+<div class="progress-bar" id="progressBar"></div>
 
-    <form id="reservationForm">
-        <div class="step-box">
-            <div><span class="step-num">1</span>お客様情報をご入力ください</div>
-            <input type="text" name="name" placeholder="お名前" required>
-            <select name="course" required>
-                <option value="">コースを選択してください</option>
-                <option value="60min">スタンダード 60分</option>
-                <option value="90min">プレミアム 90分</option>
-                <option value="120min">ラグジュアリー 120分</option>
-            </select>
+<!-- ===== COVER ===== -->
+<section class="cover">
+  <div class="curtain-left"></div>
+  <div class="curtain-right"></div>
+  <div class="cover-inner">
+    <div class="cover-en">When the Curtain Rises</div>
+    <h1 class="cover-title">幕が上がるとき</h1>
+    <div class="cover-subtitle">― 役者たちの夜 ―</div>
+    <div class="cover-divider"></div>
+    <p class="cover-tagline">
+      あなたはこの人生を、自ら望んで選んだ。<br>
+      たとえ今、それを忘れていたとしても——<br>
+      舞台はまだ、続いている。
+    </p>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</section>
+
+<!-- ===== TOC ===== -->
+<nav class="toc">
+  <div class="toc-title">— Contents —</div>
+  <ul class="toc-list">
+    <li><a href="#ch0"><span class="ch-num">序章</span>選んだ記憶</a></li>
+    <li><a href="#ch1"><span class="ch-num">第一章</span>紅い絨毯</a></li>
+    <li><a href="#ch2"><span class="ch-num">第二章</span>幕の向こう側</a></li>
+    <li><a href="#ch3"><span class="ch-num">第三章</span>舞台袖で泣く女</a></li>
+    <li><a href="#ch4"><span class="ch-num">第四章</span>悪役の衣装</a></li>
+    <li><a href="#ch5"><span class="ch-num">第五章</span>途中で降りた者たち</a></li>
+    <li><a href="#ch6"><span class="ch-num">第六章</span>次の幕が上がる</a></li>
+    <li><a href="#epilogue"><span class="ch-num">終章</span>明日の役</a></li>
+    <li><a href="#characters"><span class="ch-num">登場人物</span>六人の役者たち</a></li>
+    <li><a href="#spinoff"><span class="ch-num">幕間短編</span>黒コートの男の独白</a></li>
+    <li><a href="#afterword"><span class="ch-num">あとがき</span>この物語について</a></li>
+  </ul>
+</nav>
+
+<!-- ===== 序章 ===== -->
+<article class="chapter" id="ch0">
+  <header class="chapter-header">
+    <div class="chapter-visual visual-prologue">
+      <div class="door" style="left:8%;height:140px;background:linear-gradient(to top,#3a1060,#1a0830);box-shadow:0 0 18px rgba(120,60,200,0.5),inset 0 0 12px rgba(180,120,255,0.2);border:1px solid rgba(150,80,220,0.4)"></div>
+      <div class="door" style="left:18%;height:110px;background:linear-gradient(to top,#0a3060,#051830);box-shadow:0 0 15px rgba(40,120,220,0.5),inset 0 0 10px rgba(80,160,255,0.2);border:1px solid rgba(60,130,220,0.4)"></div>
+      <div class="door" style="left:29%;height:160px;background:linear-gradient(to top,#601010,#300808);box-shadow:0 0 22px rgba(200,40,40,0.5),inset 0 0 14px rgba(255,80,60,0.2);border:1px solid rgba(200,60,50,0.5)"></div>
+      <div class="door" style="left:41%;height:190px;background:linear-gradient(to top,#704010,#382008);box-shadow:0 0 28px rgba(220,140,30,0.6),inset 0 0 16px rgba(255,180,60,0.25);border:1px solid rgba(210,150,50,0.5)"></div>
+      <div class="door" style="left:54%;height:165px;background:linear-gradient(to top,#106030,#083018);box-shadow:0 0 20px rgba(40,180,80,0.5),inset 0 0 12px rgba(80,220,120,0.2);border:1px solid rgba(50,180,90,0.4)"></div>
+      <div class="door" style="left:66%;height:120px;background:linear-gradient(to top,#204060,#102030);box-shadow:0 0 16px rgba(60,140,200,0.45),inset 0 0 10px rgba(80,160,220,0.2);border:1px solid rgba(70,140,200,0.4)"></div>
+      <div class="door" style="left:77%;height:145px;background:linear-gradient(to top,#502060,#280e30);box-shadow:0 0 18px rgba(160,60,200,0.5),inset 0 0 12px rgba(200,100,240,0.2);border:1px solid rgba(160,70,210,0.4)"></div>
+      <div class="door" style="left:88%;height:100px;background:linear-gradient(to top,#1a3060,#0a1830);box-shadow:0 0 14px rgba(60,100,200,0.4);border:1px solid rgba(60,100,180,0.35)"></div>
+    </div>
+    <span class="chapter-num">Prologue</span>
+    <h2 class="chapter-title">選んだ記憶</h2>
+    <div class="chapter-title-en">The Choice Before Birth</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>どこかで、決めた。</p>
+
+<p>まだ生まれる前の、光も重さもない場所で——翔太は、この人生を選んだ。</p>
+
+<p>そのことを、翔太は知らない。</p>
+
+<p>生まれた瞬間に、忘れた。</p>
+
+<p>誰もがそうするように。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>その夜、翔太が見た夢の中に、ひとつの場面があった。</p>
+
+<p>幼い自分が、巨大な壁の前に立っている。壁には無数の扉があり、それぞれに異なる光が灯っていた。赤い光、青い光、暖かい光、冷たい光。そしてひとつひとつの扉の前に、係の人間が立ち、幼い翔太に向かって静かに言っていた。</p>
+
+<p class="dialogue">「この扉を選んだら、こういう人生になります。豊かではないかもしれない。苦しいことも多い。でも——あなたが今世で学びたいことは、この扉の先にある」</p>
+
+<p>幼い翔太は、その扉を見つめた。しばらく迷って。それから、静かに頷いた。</p>
+
+<p class="dialogue">「わかった。この扉にする」</p>
+
+<p class="dialogue">「覚えていられないけど、いいですか」</p>
+
+<p class="dialogue">「いい」</p>
+
+<p class="dialogue">「苦しいときに、投げ出したくなるかもしれない。それでもいいですか」</p>
+
+<p>幼い翔太は一度だけ、目を閉じた。</p>
+
+<p class="dialogue">「……それでも、いい」</p>
+
+<p>扉が開いた。光が溢れた。そして——翔太は、何もかもを忘れて、この世界に生まれてきた。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>三十八歳になった翔太は、その夢を覚えていない。</p>
+
+<p>ただ、朝起きるたびに、胸のどこかに、説明できない感覚がある。</p>
+
+<p>まるで——何かを探しているような。あるいは——何かを思い出しかけているような。</p>
+
+<p>その感覚の名前を、翔太はまだ知らなかった。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 1 ===== -->
+<article class="chapter" id="ch1">
+  <header class="chapter-header">
+    <div class="chapter-visual visual-ch1">
+      <div style="position:absolute;top:0;left:0;bottom:0;width:22%;background:linear-gradient(to bottom,#5a0c1a 0%,#2a0610 100%);clip-path:polygon(0 0,100% 0,78% 100%,0 100%)"></div>
+      <div style="position:absolute;top:0;right:0;bottom:0;width:22%;background:linear-gradient(to bottom,#5a0c1a 0%,#2a0610 100%);clip-path:polygon(22% 0,100% 0,100% 100%,0 100%)"></div>
+      <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%) rotateX(55deg);transform-origin:bottom center;width:160px;height:200px;background:linear-gradient(to top,#7a0e18 0%,#9a1828 20%,#b02030 50%,#9a1828 80%,#6a0e18 100%);box-shadow:0 0 60px rgba(180,20,40,0.6),0 0 120px rgba(120,10,20,0.4);perspective:600px"></div>
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:40px;background:linear-gradient(to bottom,#a8895a,transparent)"></div>
+      <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);width:36px;height:18px;background:radial-gradient(ellipse at 50% 30%,rgba(201,169,106,0.9) 0%,rgba(168,137,90,0.5) 50%,transparent 100%);border-radius:50%;box-shadow:0 0 20px rgba(201,169,106,0.6)"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 80%,rgba(120,20,30,0.5) 0%,transparent 70%)"></div>
+    </div>
+    <span class="chapter-num">Chapter I</span>
+    <h2 class="chapter-title">紅い絨毯</h2>
+    <div class="chapter-title-en">The Crimson Carpet</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>気がついたとき、宮下翔太はすでにその場所に立っていた。</p>
+
+<p>自分がどこから来たのか、いつそこへ足を踏み入れたのか——そういった記憶の端緒は、どこにもなかった。あるのはただ、足の裏に伝わる確かな感触だけだ。</p>
+
+<p>深く、艶のある。</p>
+
+<p>紅い絨毯。</p>
+
+<p>視界の果てまで続くそれは、ただの床ではなかった。光を吸い込むように深く発色しながら、踏むたびにわずかに沈む——まるで大地そのものが息をしているかのような弾力があった。翔太は思わずもう一度、右足で床を押した。ふわり、と沈む。翔太の中で、不思議な安堵が生まれた。</p>
+
+<p class="inner-voice">——ここは、劇場だ。</p>
+
+<p>顔を上げると、それが一気に理解できた。天井は高く、シャンデリアの光が柔らかく降り注いでいる。壁には金の装飾が施され、深い臙脂色のカーテンが左右に引かれていた。建物全体が、長い年月をかけて熟成された威厳を帯びている。古びているのではない。時間が、この場所に深みを与えているのだ。</p>
+
+<p>ロビーだ、と翔太は思った。本番前の、あのざわめきがある場所。</p>
+
+<p>だが——ざわめきは、ない。</p>
+
+<p>人は、いる。それも夥しいほどに。翔太の目が届く限り、数百人——いや、もっと多いかもしれない——の人々が、この広いロビーに整然と並んでいた。乱れはひとつもなかった。誰もが体育座りをして、膝を抱え、前を向いている。まるで入学式の体育館で号令を待つ生徒たちのように、あるいは何か大きな儀式の前夜のように、皆が静かに呼吸を整えていた。</p>
+
+<p>翔太は自分も、その列の真ん中あたりにいることに気づいた。</p>
+
+<p>いつからそこに座っていたのか。</p>
+
+<p>わからない。</p>
+
+<p>ただ、今ここにいる。</p>
+
+<p>隣を見ると、五十代とおぼしき男性がいた。目を閉じ、口元を固く結んでいる。緊張というより、何かを受け入れようとしているような、覚悟の顔だ。その隣には二十代の女性。指先がわずかに震えている。その向こうには老人。白髪を丁寧に整え、姿勢だけはびしりと正している。</p>
+
+<p>翔太は、ひとりひとりの顔を、ゆっくりと目で追っていった。</p>
+
+<p>緊張している者。</p>
+
+<p>無表情の者。</p>
+
+<p>どこか覚悟を決めたような者。</p>
+
+<p>目を閉じ、瞑想するような者。</p>
+
+<p>口の中で何かを唱えている者。</p>
+
+<p>泣いているわけでも、笑っているわけでも、騒いでいるわけでもない。皆が皆、この静寂を引き受けていた。</p>
+
+<p>翔太は自分の胸のあたりに、不思議な感覚があることに気づいた。</p>
+
+<p>高揚、だろうか。</p>
+
+<p>恐れではない。逃げたいという衝動もない。むしろ逆だ——これから始まる何かに向かって、自分の中の何かが前のめりになっている。三十八年の人生の中で、翔太はほとんどいつも、物事をどこか斜に構えて見てきた。すぐに「どうせ」と思い、「でも」と言い、結局一歩引いたところから眺めてきた。それが翔太という人間の、長年の癖だった。</p>
+
+<p>なのに今、この場所では——</p>
+
+<p>その癖が、どこかへ消えていた。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>館内放送が、静かに響いたのは、そのときだった。</p>
+
+<p>音量は決して大きくない。むしろ穏やかとも言えるくらいだ。だが、その声は不思議な透明感を持っていて、場の空気の隅々まで届いた。性別も年齢も判然としない声だった。人間の声とも、そうでないものとも取れた。</p>
+
+<p class="dialogue">「これから皆さんには——一人につき三つの役を、リハーサル無しで舞台上にて演じていただきます」</p>
+
+<p>短い間があった。</p>
+
+<p class="dialogue">「役どころを選べる者、選べない者がいます。係の指示と誘導に従い、各自、全力で演じきってください」</p>
+
+<p>以上だった。</p>
+
+<p>説明も、補足も、理由も——何もない。</p>
+
+<p>だが奇妙なことに、翔太の周囲に混乱は生まれなかった。「それはどういう意味ですか」と問う者もいない。「嫌です」と席を立つ者もいない。まるで全員が、このアナウンスをずっと前から知っていたかのように、静かに受け取った。</p>
+
+<p>そして——一斉に、立ち上がった。</p>
+
+<p>ざわめきはない。混乱もない。</p>
+
+<p>数百人の人間が、波一つ立てずに動き始めた。</p>
+
+<p>廊下へと流れていく者。舞台袖へと向かう者。その場に留まり待機を続ける者。二階の階段を上り、衣装室へと消えていく者。</p>
+
+<p>すべてが、驚くほど滑らかだった。</p>
+
+<p>翔太もまた、気がつけば歩き出していた。</p>
+
+<p>どこへ向かうべきか、誰も教えてくれない。だが足は迷わなかった。廊下を進み、角を曲がり——気がつくと翔太は、舞台の袖に近い待機スペースに立っていた。薄暗い照明の下、他の数人が同じように待っている。</p>
+
+<p>隣に立っていたのは、三十代半ばほどの女性だった。</p>
+
+<p>肩まで伸びた黒髪。化粧は薄い。仕事帰りのような、地味なジャケット姿。だが目には、静かな光があった。</p>
+
+<p class="dialogue">「初めて？」</p>
+
+<p>彼女が小声で訊いてきた。</p>
+
+<p>翔太は一瞬迷ってから、素直に頷いた。</p>
+
+<p class="dialogue">「そうか」と彼女は言った。「私も三回目」</p>
+
+<p class="dialogue">「三回目？」</p>
+
+<p class="dialogue">「同じ役を、三回やり直してる。まだ、合格できてないから」</p>
+
+<p>彼女は淡々とそう言った。自嘲でも諦めでもない。ただ、事実として述べているような口ぶりだった。</p>
+
+<p>翔太は何と返せばいいかわからず、黙って前を向いた。</p>
+
+<p>舞台の幕が、ゆっくりと上がり始めていた。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 2 ===== -->
+<article class="chapter" id="ch2">
+  <header class="chapter-header">
+    <span class="chapter-num">Chapter II</span>
+    <h2 class="chapter-title">幕の向こう側</h2>
+    <div class="chapter-title-en">Beyond the Curtain</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>舞台は、想像をはるかに超えていた。</p>
+
+<p>広い——という言葉では足りない。地平線があるかのように広い。照明は柔らかく場所によって色合いが異なり、ある部分は昼間の光を模し、ある部分は蛍光灯の白色光が降り注ぎ、ある部分は夕暮れの橙が漂っていた。複数の「場面」が、同時に、完全に独立して存在していた。</p>
+
+<p>病室がある。</p>
+
+<p>ベッドに横たわる老人と、その手を握りしめて泣いている若い女性。老人の呼吸は浅い。モニターの数字が、静かに、しかし確実に変化していく。女性の嗚咽は声にならず、肩だけが震えている。</p>
+
+<p>花畑がある。</p>
+
+<p>見渡す限りの菜の花の中で、三人の子どもたちが走り回っている。笑い声が風に乗って飛んでいく。転んで泥だらけになっても、立ち上がってまた笑う。なんの陰翳もない、純粋な喜びだけがそこにある。</p>
+
+<p>オフィスがある。</p>
+
+<p>蛍光灯の下、スーツ姿の人間たちが黙々とキーボードを叩いている。疲弊の色が浮いているのに、誰も手を止めない。コーヒーカップが机の端で冷えていく。電話が鳴る。誰かが受話器を取り、短く応答し、また画面に向かう。</p>
+
+<p>街角がある。</p>
+
+<p>人込みの中、スーツ姿の男性が自転車の老婆と肩をぶつけた。老婆の荷物が散らばる。男性の顔が歪む——苛立ち、焦り、しかし同時に罪悪感。その表情の変化が、翔太にはまるで映画のクローズアップのように見えた。</p>
+
+<p>それぞれの場面が、完全な世界として存在していた。</p>
+
+<p class="inner-voice">——ただの日常だ。</p>
+
+<p>翔太は思った。病気も死も、ある。子どもの笑いも、ある。疲弊も、苛立ちも、ある。特別ではない。どこにでもある、誰もが生きている、あの日常。</p>
+
+<p>なのにそれが——こんなにも美しかった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太が演じた最初の役は、「中年の会社員」だった。</p>
+
+<p>どこで何を演じるのか、誰かが教えてくれたわけではない。ただ、オフィスの場面に近づいたとき、自分がそこにいる人間の一人であることが、自然にわかった。翔太はネクタイを締め、パソコンの前に座った。</p>
+
+<p>キーボードを叩く。書類を確認する。電話に出る。</p>
+
+<p>最初はぎこちなかった。演技、という意識が邪魔をした。「自分は今、演じている」という距離感がある。けれど二十分ほどが経ったころ——ふいに、その距離が消えた。翔太は自然に、その男になっていた。</p>
+
+<p>朝七時に家を出て、満員電車に四十分揺られ、コンビニのコーヒーを飲みながら会社に着く。上司の顔色を確認し、今日の仕事量を瞬時に計算し、深呼吸をしてから席につく。昼飯は十五分で済ませる。夕方になると体の節々が鈍く痛む。それでも手は止めない。</p>
+
+<p>なぜそんな細部まで「見えた」のか、翔太にはわからない。だがその男の生活の重さが、手触りのあるものとして伝わってきた。彼の疲れは本物で、彼の我慢も本物で、それでも毎朝ネクタイを締めて出ていく理由も——おそらく、本物だった。</p>
+
+<p>家族か。</p>
+
+<p>誇りか。</p>
+
+<p>それとも惰性か。</p>
+
+<p>翔太には、その答えは出せなかった。ただ——その「わからなさ」ごと、そこに座っている男の存在に、翔太はしばらくの間、完全になりきった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>舞台の不思議なことは、他にもあった。</p>
+
+<p>自分の場面に集中しているはずなのに——別の場所の気配が、確かに届いてくる。病室の女性の嗚咽が、かすかに耳に入る。子どもたちの笑い声が、風のように届く。街角の男性の焦りが、空気の緊張として伝わる。</p>
+
+<p>バラバラに存在しているはずの場面が——すべてつながっている。</p>
+
+<p class="inner-voice">——これが、世界か。</p>
+
+<p>翔太は思った。自分が今日、満員電車に乗っているとき、どこかの誰かが病床で息を引き取っている。自分が取引先に怒鳴られているとき、どこかの花畑で子どもたちが無心に走り回っている。自分の物語は孤立していない。同時進行で、無数の物語が、この世界で展開している。</p>
+
+<p>知らないだけで。</p>
+
+<p>気づいていないだけで。</p>
+
+<p>それは以前の翔太には、少しも実感がなかった。他人の痛みは他人の痛みだと思っていた。他人の喜びは他人の喜びだと思っていた。だが今——舞台の上で、それが皮膚感覚として届いてくる。</p>
+
+<p>ひとつの舞台だから、だ。</p>
+
+<p>皆が同じ場所にいるから、伝わってくる。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太の二つ目の役は、「病室の見舞い客」だった。</p>
+
+<p>ベッドに横たわっていたのは、七十代の男性だった。翔太の父親のような年齢だ。翔太は椅子に座り、その手を握った。</p>
+
+<p>どんな関係の人間かは、指示されなかった。翔太は迷いながら、老人の顔を見た。</p>
+
+<p>目が合った。</p>
+
+<p>老人は、わずかに微笑んだ。</p>
+
+<p>その微笑みは、なんと言えばいいのだろう——疲弊の奥に、なにか澄んだものが滲んでいた。山を登りきった人間だけが見せる、あの清澄な諦念のようなものが。</p>
+
+<p>翔太は何も言えなかった。</p>
+
+<p>言葉が出てこなかった。</p>
+
+<p>だが不思議なことに——何も言わなくていい気がした。翔太はただ、その手を握り続けた。老人の呼吸に合わせるように、翔太の呼吸も静かになっていった。</p>
+
+<p>どのくらいそうしていただろうか。</p>
+
+<p>老人が、かすかに言った。</p>
+
+<p class="dialogue">「……ありがとう」</p>
+
+<p>ただそれだけだった。</p>
+
+<p>翔太の目に、気がつくと涙が浮かんでいた。</p>
+
+<p>自分でも、驚いた。</p>
+
+<p class="inner-voice">——これは演技なのか。</p>
+
+<p>わからなかった。もうその問いが、意味をなさないような気がした。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 3 ===== -->
+<article class="chapter" id="ch3">
+  <header class="chapter-header">
+    <div class="chapter-visual visual-ch3">
+      <div class="visual-ch3 wing-light"></div>
+      <div class="visual-ch3 fig1 figure"></div>
+      <div class="visual-ch3 fig2 figure"></div>
+      <div class="visual-ch3 fig3 figure"></div>
+      <div class="visual-ch3 floor-line"></div>
+    </div>
+    <span class="chapter-num">Chapter III</span>
+    <h2 class="chapter-title">舞台袖で泣く女</h2>
+    <div class="chapter-title-en">The Woman Who Wept in the Wings</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>第一幕が終わった。</p>
+
+<p>翔太は舞台袖へと引き上げた。足取りは重くない。むしろ——不思議な充足感があった。ランナーが長距離を走り切ったときのような、体の奥底からじわりと滲む満足感。消耗しているのに、満たされている。</p>
+
+<p>舞台袖の薄暗い空間に、数十人が集まりつつあった。</p>
+
+<p>そこに、一人の男が立っていた。</p>
+
+<p>年齢は不詳だった。五十代にも、七十代にも見える。背は高く、体格は細い。黒い衣装を身につけ、何も持たず、ただ静かに立っていた。その存在感は、特別な照明を当てているわけでもないのに、自然と目を引いた。</p>
+
+<p>舞台監督——翔太はそう直感した。</p>
+
+<p>男は、静かに一人ひとりを見ていた。</p>
+
+<p>やがて、三人を指差した。</p>
+
+<p class="dialogue">「君と、君と、君——演じきれていない。もう一度、同じ役をやり直しだ」</p>
+
+<p>感情はなかった。</p>
+
+<p>責めているのでも、蔑んでいるのでもない。ただ事実だけを述べるような、淡々とした声。</p>
+
+<p>翔太は、指差された三人を見た。</p>
+
+<p>一人は五十代の男性。じっと俯いた。深呼吸を一度して、また幕の方へ向かって歩いていった。</p>
+
+<p>一人は二十代の青年。ぐっと唇を噛んで、頷いた。</p>
+
+<p>そして——一人は、三十代の女性だった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>彼女の名前は、後で知った。桐島奈緒、という。</p>
+
+<p>翔太がロビーで隣に座っていた、あの女性だった。</p>
+
+<p>奈緒は、その場に崩れ落ちた。</p>
+
+<p>床に膝をつき、手を床について、頭を垂れた。嗚咽とも、喘ぎともとれない声が漏れた。</p>
+
+<p class="dialogue">「できなかった……私には向いてない……次の幕は、もう休みたい……！」</p>
+
+<p>周囲の人間は、黙って見ていた。</p>
+
+<p>助けに行く者もいない。だが冷たいわけでもない。ただ——この場所では、それぞれの痛みをそれぞれが引き受けなければならないことを、皆が知っているかのような、静かな距離があった。</p>
+
+<p>翔太は動けなかった。</p>
+
+<p>声をかけるべきか。</p>
+
+<p>引き上げるべきか。</p>
+
+<p>それとも、見守るだけでいいのか。</p>
+
+<p>やがて舞台監督が、奈緒の前に立った。しゃがんで、目線を合わせた。声を低くして、言った。</p>
+
+<p class="dialogue">「君は三回、同じ役を続けている。なぜだと思う？」</p>
+
+<p>奈緒は顔を上げなかった。</p>
+
+<p class="dialogue">「……わからない」</p>
+
+<p class="dialogue">「君が演じていたのは、母親の役だ」と舞台監督は言った。「だが君は、台本通りに振る舞うことにばかり集中していた」</p>
+
+<p class="dialogue">「台本通りって……それで何が悪いんですか」</p>
+
+<p class="dialogue">「悪くはない」</p>
+
+<p>舞台監督は穏やかに言った。</p>
+
+<p class="dialogue">「だが台本は、出発点に過ぎない。母親という役は、正しくあることではなく——目の前の子どもを見ることだ。台本を読んでいる間は、目の前の人間が見えない」</p>
+
+<p>奈緒は、しばらく黙っていた。</p>
+
+<p>やがて、震える声で言った。</p>
+
+<p class="dialogue">「……私は、現実でも、ずっとそうでした。ちゃんとしなきゃ、正しくしなきゃ、って。子どもの顔を、ちゃんと見てなかった」</p>
+
+<p>舞台監督は何も言わなかった。</p>
+
+<p>ただ、静かに頷いた。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太はその光景を見ながら、自分の胸が締め付けられるのを感じた。</p>
+
+<p>奈緒の言葉が、どこか他人事ではなかった。</p>
+
+<p>翔太にも——見えていなかったものが、あった。</p>
+
+<p>元妻の顔。</p>
+
+<p>別れて三年になる。理由はいくつかあったが、彼女が最後に言った言葉を、翔太は今でも鮮明に覚えている。</p>
+
+<p>「翔太は、いつも正しいことを言うよね。でも私は、正しさより、あなたに見ていてほしかった」</p>
+
+<p>そのとき翔太は、意味がよくわからなかった。</p>
+
+<p>見てる、と思っていた。ちゃんと話を聞いてる、と思っていた。だが彼女が言う「見る」とは——翔太が思っていた「見る」とは、違うものだったのだろう。</p>
+
+<p>今、奈緒の言葉を聞いて——翔太には、その違いが少しだけ、わかった気がした。</p>
+
+<p>台本を読みながらでは、目の前の人間が見えない。</p>
+
+<p class="inner-voice">——そうだ。私は、彼女に向かって「正しさの台本」を読み続けていた。</p>
+
+<p>それに気づいたとき、翔太の目の奥が、じわりと熱くなった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>奈緒はしばらく後、立ち上がった。</p>
+
+<p>目が赤い。でも、表情が変わっていた。崩れ落ちる前の「必死さ」がなくなって、代わりに——なにか、やわらかいものが浮いていた。</p>
+
+<p class="dialogue">「もう一度、やります」</p>
+
+<p>彼女は舞台監督に言った。</p>
+
+<p>静かな声だった。演技ではない、素の声だった。</p>
+
+<p>舞台監督は頷いた。</p>
+
+<p>奈緒が幕の方へ歩き始めた。翔太はその背中を見ながら、なぜか——応援したい、と思った。知り合って一時間も経っていない、名前も今しがた知ったばかりの女性に向かって。</p>
+
+<p>この感覚も、しばらく忘れていた感覚だった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太はふと、舞台監督に訊いた。</p>
+
+<p class="dialogue">「同じ役を繰り返すのは——罰なんですか？」</p>
+
+<p>舞台監督は、翔太を見た。</p>
+
+<p class="dialogue">「罰ではない。理解が深まるまで、もう一度機会が与えられるだけだ。繰り返せる者は——まだいい」</p>
+
+<p>翔太は「まだいい」という言葉が引っかかった。</p>
+
+<p class="dialogue">「繰り返せない者も、いるんですか」</p>
+
+<p>舞台監督は少しの間、何も言わなかった。</p>
+
+<p class="dialogue">「……いる」</p>
+
+<p>その声には、はじめて微かな陰りがあった。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 4 ===== -->
+<article class="chapter" id="ch4">
+  <header class="chapter-header">
+    <div class="chapter-visual visual-ch4">
+      <div class="visual-ch4 aura"></div>
+      <div class="visual-ch4 gold-edge"></div>
+      <div class="visual-ch4 coat"></div>
+    </div>
+    <span class="chapter-num">Chapter IV</span>
+    <h2 class="chapter-title">悪役の衣装</h2>
+    <div class="chapter-title-en">The Villain's Costume</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>幕間のロビーに戻ったとき、翔太は奇妙な光景を目にした。</p>
+
+<p>衣装を身につけた人々が、廊下を行き来している。</p>
+
+<p>天使の羽を背負い、白衣を着た女性が静かに歩いている。看護師の制服に、大きな羽。非現実的な組み合わせなのに、彼女の表情には一点の迷いもなく、その姿は奇妙なほど様になっていた。</p>
+
+<p>その少し後ろを、真逆の装いをした男が歩いていた。</p>
+
+<p>黒いコート。鋭く整えられた眉。口元には、計算されたような冷たい笑み。悪役、と一目でわかる衣装だ。だが彼も——翔太の目には、完全に「なりきっている」ように見えた。</p>
+
+<p>翔太は思わず、その男に声をかけた。</p>
+
+<p class="dialogue">「それ——悪役ですよね」</p>
+
+<p>男は立ち止まった。翔太を見た。四十代くらいだろうか。衣装の下の素顔は、意外にも穏やかだった。</p>
+
+<p class="dialogue">「そうだよ」と男は言った。「私が演じるのは、部下を追い詰める上司の役だ」</p>
+
+<p class="dialogue">「……嫌じゃないんですか」</p>
+
+<p>翔太には、正直な疑問だった。</p>
+
+<p>男はしばらく考えてから、答えた。</p>
+
+<p class="dialogue">「最初はね。でも——この役がいなかったら、相手は何も試されない」</p>
+
+<p class="dialogue">「試される、というのは？」</p>
+
+<p class="dialogue">「追い詰められたとき、人間は何を選ぶか。折れるのか、立ち向かうのか、逃げるのか、助けを求めるのか。私がいなければ、その答えが出ない。悪役がいるから、主役が輝く——じゃなくてね」</p>
+
+<p>男は少し微笑んだ。</p>
+
+<p class="dialogue">「悪役がいるから、主役が主役になれる。自分が何者かを知れる」</p>
+
+<p>翔太は、その言葉を咀嚼した。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太はロビーの紅い絨毯の上に再び座りながら、その言葉の意味を転がしていた。</p>
+
+<p>悪役がいなければ、主役になれない。</p>
+
+<p>追い詰める者がいなければ、それに向き合う力は生まれない。</p>
+
+<p>翔太の人生にも——追い詰めてきた人間は、いた。</p>
+
+<p>理不尽な上司。</p>
+
+<p>裏切った友人。</p>
+
+<p>最後まで認めてくれなかった父親。</p>
+
+<p>翔太は長年、それらを「なかった方がよかったもの」として記憶の隅に追いやってきた。傷として、不条理として、怒りの燃料として。</p>
+
+<p>だが——もし、あの上司がいなければ。</p>
+
+<p>あの理不尽に向き合わなければ。</p>
+
+<p>翔太は今、どこにいただろうか。</p>
+
+<p class="inner-voice">——もしかしたら、あの人たちも、役を演じていたのだろうか。</p>
+
+<p>望んで選んだ役か、与えられた役かは、わからない。</p>
+
+<p>だが舞台監督が言った言葉を、翔太は思い出した。</p>
+
+<p class="inner-voice">「役どころを選べる者、選べない者がいます」</p>
+
+<p>外から見れば——その違いは、まったく分からない。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太の三つ目の役は、「父親」だった。</p>
+
+<p>場面は、夕暮れの公園。</p>
+
+<p>小学生くらいの男の子が、ブランコに乗りながら翔太を待っていた。翔太がベンチに近づくと、男の子は立ち上がり、駆け寄ってきた。</p>
+
+<p class="dialogue">「おとうさん！」</p>
+
+<p>翔太は驚いた。</p>
+
+<p>子どもはいない。結婚していたころも、子どもはいなかった。この役は、翔太の人生にはなかった役だ。</p>
+
+<p>だが男の子は、当然のように翔太の手を握った。</p>
+
+<p>小さな手だった。温かかった。</p>
+
+<p class="dialogue">「今日ね、ケンカしたんだ」男の子は言った。「タイチにたたかれた」</p>
+
+<p class="dialogue">「……そうか」</p>
+
+<p class="dialogue">「でもおれ、泣かなかった」</p>
+
+<p class="dialogue">「それで——どんな気持ちだった？」</p>
+
+<p>翔太は、男の子の顔を見ながら訊いた。台本はない。正しい答えもない。ただ、目の前の子どもを——見た。</p>
+
+<p>男の子は少しの間、考えた。</p>
+
+<p class="dialogue">「……さみしかった」</p>
+
+<p>翔太は、その言葉に黙った。</p>
+
+<p>さみしかった——泣かなかったけど、さみしかった。</p>
+
+<p>翔太はゆっくりと、男の子の頭に手を置いた。よしよし、でもない。大丈夫、でもない。ただ——そこにある手。</p>
+
+<p>男の子は、そのまましばらく翔太にもたれかかっていた。</p>
+
+<p>翔太は、この役が今まで生きてきた中で一番難しい役だと思った。そして同時に——この役を、自分はずっとやりたかったのかもしれない、とも思った。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 5 ===== -->
+<article class="chapter" id="ch5">
+  <header class="chapter-header">
+    <div class="chapter-visual visual-ch5">
+      <div class="visual-ch5 door-light"></div>
+      <div class="visual-ch5 door-frame"></div>
+      <div class="visual-ch5 door-panel"></div>
+      <div class="visual-ch5 floor-glow"></div>
+    </div>
+    <span class="chapter-num">Chapter V</span>
+    <h2 class="chapter-title">途中で降りた者たち</h2>
+    <div class="chapter-title-en">Those Who Left the Stage</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>第二幕が終わったあと、翔太はロビーではなく、劇場の奥へ続く廊下を歩いた。</p>
+
+<p>どこへ向かうのかは、わからない。ただ足が、そちらへ向いた。</p>
+
+<p>廊下の突き当たりに、小さな部屋があった。扉は半開きになっていた。翔太は静かにその中を覗いた。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>部屋の中には、十数人がいた。</p>
+
+<p>彼らは衣装を着ていなかった。椅子に座っているわけでもない。ただ、部屋の中に漂うように存在していた。その表情は一様に——どこか遠く、宙を見ていた。</p>
+
+<p>翔太は、彼らの異様さに気がついた。体がある。顔もある。だが——輪郭が、わずかに薄い。ちょうど蛍光灯が一本切れかけているような、そんな存在の不安定さがあった。</p>
+
+<p>舞台監督が、翔太の後ろに立っていた。</p>
+
+<p class="dialogue">「気になったか」</p>
+
+<p class="dialogue">「……この人たちは？」</p>
+
+<p>舞台監督は静かに言った。</p>
+
+<p class="dialogue">「途中で降りた者たちだ」</p>
+
+<p class="dialogue">「途中で——降りた？」</p>
+
+<p class="dialogue">「幕が下りる前に、自分で舞台を去った。役を途中で放棄した」</p>
+
+<p>翔太は息を飲んだ。</p>
+
+<p class="dialogue">「……それは、自分の意志で？」</p>
+
+<p class="dialogue">「そうだ。苦しくなって、もう続けられないと判断した。だから——出ていった」</p>
+
+<p>翔太は、部屋の中の人々を改めて見た。若い者もいた。年配の者もいた。男も女もいた。共通しているのはただ一点——その目の奥に、深い後悔が滲んでいることだった。悲しみでも絶望でもない。ただ、沈んだ後悔。</p>
+
+<p class="dialogue">「この人たちは、今……どうなっているんですか」</p>
+
+<p>舞台監督は少し間を置いてから言った。</p>
+
+<p class="dialogue">「役を終えていない。だから次の幕にも進めない。衣装を選ぶこともできない。ただ——ここにいる」</p>
+
+<p class="dialogue">「いつまで？」</p>
+
+<p class="dialogue">「その人自身が、自分が何から逃げたのかを理解するまで、かもしれない。それがいつになるかは——誰にもわからない」</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太は入り口に立ったまま、動けなかった。</p>
+
+<p>部屋の中のひとりの若者が、翔太と目が合った。二十代だろうか。整った顔立ちをしていた。ただその目だけが——ひどく老いていた。長い時間をずっとひとりで過ごしてきた人間の目だった。</p>
+
+<p>若者は、かすかに口を開いた。声は出なかったが、翔太には読み取れた。</p>
+
+<p class="dialogue">「——逃げたら、楽になると思った」</p>
+
+<p>翔太は何も言えなかった。</p>
+
+<p>若者はもう一度、口を動かした。</p>
+
+<p class="dialogue">「——でも、ここは——もっと、つらかった」</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太は廊下を戻りながら、胸が重くなるのを感じた。</p>
+
+<p>逃げたら、楽になると思った——その言葉は、翔太にも他人事ではなかった。</p>
+
+<p>離婚したとき。仕事が完全に行き詰まったとき。父親が死んで、一言も言い合えないまま終わってしまったとき。翔太は何度か、ここからいなくなれたら、と思った。消えてしまえたら、と思った。</p>
+
+<p>それが具体的な意志になったことはなかった。だが、その感覚は知っていた。</p>
+
+<p class="inner-voice">——でも、あの若者は言っていた。逃げた先は、もっとつらかった、と。</p>
+
+<p>舞台監督の声が、翔太の背後から聞こえた。</p>
+
+<p class="dialogue">「舞台を去ることは、苦しみを消さない。ただ——形を変えるだけだ」</p>
+
+<p>翔太は立ち止まった。</p>
+
+<p class="dialogue">「それは——現実でも同じですか」</p>
+
+<p>舞台監督は静かに答えた。</p>
+
+<p class="dialogue">「ここと現実は、同じ舞台の、表と裏だ」</p>
+
+<p class="scene-break">* * *</p>
+
+<p>逃げることで消えるものなど、何もない。</p>
+
+<p>逃げた先に積み上がるものがある。そして——逃げた者が残していくものが、この世界にある。</p>
+
+<p>翔太の頭に、あの若者の顔が浮かんだ。彼が舞台を去ったとき、残された人間は何を感じただろう。誰かが、その穴の前に立ち尽くしたのではないだろうか。誰かが、理由を探しながら長い夜を過ごしたのではないだろうか。</p>
+
+<p>舞台は——ひとりで成立しない。誰かが欠けると、全体が揺らぐ。それはこの劇場の話だけではなく、現実という舞台でも——同じことだ。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太は廊下を歩きながら、もう一度あの部屋を振り返った。扉は半開きのまま、薄明かりが漏れていた。</p>
+
+<p>あの部屋の人たちが、いつかまた舞台に戻れることを——翔太はなぜか、強く思った。</p>
+
+<p>戻ってきていい。</p>
+
+<p>何度でも、やり直せる。</p>
+
+<p>舞台は——待っている。</p>
+
+  </div>
+</article>
+
+<!-- ===== CHAPTER 6 ===== -->
+<article class="chapter" id="ch6">
+  <header class="chapter-header">
+    <span class="chapter-num">Chapter VI</span>
+    <h2 class="chapter-title">次の幕が上がる</h2>
+    <div class="chapter-title-en">The Next Curtain Rises</div>
+    <div class="chapter-divider"></div>
+  </header>
+  <div class="prose">
+
+<p>第二幕が終わった。</p>
+
+<p>翔太は再び舞台袖へ引き上げた。今度は、舞台監督のそばに自ら近づいた。</p>
+
+<p>男は翔太を見た。何も言わなかったが、その目は何かを待っているようだった。</p>
+
+<p class="dialogue">「私は——合格ですか」</p>
+
+<p>翔太は訊いた。</p>
+
+<p>舞台監督は、少しの間、翔太を見つめた。</p>
+
+<p class="dialogue">「君に訊きたいのだが」と、男は言った。「今日、どんな役を演じたか。覚えているか？」</p>
+
+<p class="dialogue">「会社員と、見舞い客と、父親です」</p>
+
+<p class="dialogue">「どれが、一番難しかったか」</p>
+
+<p class="dialogue">「父親です」</p>
+
+<p class="dialogue">「なぜ？」</p>
+
+<p>翔太は少し考えた。</p>
+
+<p class="dialogue">「台本がなかったから——ではなくて。正解を探すのをやめた瞬間に、やっと相手が見えた。そのことが——怖かったです」</p>
+
+<p class="dialogue">「怖かった」と舞台監督は繰り返した。</p>
+
+<p class="dialogue">「相手が見えるということは、相手の痛みも見えるということだから。それを受け取ると、自分も変わる。変わることが怖かったのかもしれません」</p>
+
+<p>舞台監督は、静かに頷いた。</p>
+
+<p class="dialogue">「それが分かれば、十分だ」</p>
+
+<p class="dialogue">「合格ですか？」</p>
+
+<p>翔太はもう一度訊いた。</p>
+
+<p>舞台監督はわずかに微笑んだ。</p>
+
+<p class="dialogue">「合格か不合格か、という問い自体が——この舞台では、少しずれている」</p>
+
+<p class="dialogue">「というのは？」</p>
+
+<p class="dialogue">「演じきれなかった者は、同じ役を繰り返す。それは罰ではない。理解が深まるまで、もう一度機会が与えられるだけだ。君の問いは——自分が十分だったかどうかだろう。だがそれは、他者に問うものではない」</p>
+
+<p>翔太は黙った。</p>
+
+<p class="dialogue">「次の幕は？」</p>
+
+<p class="dialogue">「選んでいい」</p>
+
+<p>翔太は驚いた。</p>
+
+<p class="dialogue">「選べるんですか」</p>
+
+<p class="dialogue">「選べる者と、選べない者がいると、最初のアナウンスで言っただろう。今の君は、選べる側だ」</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太はロビーに戻った。</p>
+
+<p>紅い絨毯の上に、また人々が座り始めていた。次の幕を待つ者たち。それぞれの顔に、それぞれの色がある。</p>
+
+<p>翔太は奈緒を探した。</p>
+
+<p>いた。端のほうに、ひとりで座っていた。目は前を向いているが、何かを考えているような遠さがある。</p>
+
+<p>翔太は近づいて、隣に座った。</p>
+
+<p class="dialogue">「どうでした、三回目は」</p>
+
+<p>奈緒は翔太を見た。少し驚いた顔。それから、ゆっくりと答えた。</p>
+
+<p class="dialogue">「……合格、したみたいです」</p>
+
+<p class="dialogue">「そうか。よかった」</p>
+
+<p class="dialogue">「台本を、捨てました。舞台の上で。意識の中で、ですけど。そうしたら——子どもの顔が見えた。本当に見えた。泣いてたんです、その子。私、気づいてなかった」</p>
+
+<p>奈緒はそこで一度、言葉を止めた。</p>
+
+<p class="dialogue">「……現実でも、そうだったかもしれない」</p>
+
+<p class="dialogue">「そうだったかもしれない、というのは？」</p>
+
+<p class="dialogue">「子どもが泣いてたのに、私、気づいてなかったかもしれない。正しく育てることに必死で。あの子の顔、ちゃんと見てたかな、って」</p>
+
+<p>翔太は何も言えなかった。</p>
+
+<p>言葉より、ただそこにいることの方が大事な気がした。</p>
+
+<p>しばらく、二人は黙って並んで座っていた。紅い絨毯の上で。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>やがて奈緒が言った。</p>
+
+<p class="dialogue">「あなたは、次の幕で何を演じるんですか？」</p>
+
+<p>翔太は少し考えた。</p>
+
+<p>選べる側だと、舞台監督は言った。</p>
+
+<p>翔太が演じたいのは、何か。</p>
+
+<p>翔太の頭に、元妻の顔が浮かんだ。</p>
+
+<p>父親の役の男の子の、あの「さみしかった」という言葉が浮かんだ。</p>
+
+<p>奈緒が台本を捨てた瞬間に子どもの顔が見えた、という話が浮かんだ。</p>
+
+<p>悪役の男の「相手が主役になれる」という言葉が浮かんだ。</p>
+
+<p class="dialogue">「……わからないです、まだ」</p>
+
+<p>翔太は正直に答えた。</p>
+
+<p class="dialogue">「でも——選べるということは、これが現実でも同じなんじゃないかと思って」</p>
+
+<p class="dialogue">「どういう意味ですか？」</p>
+
+<p class="dialogue">「選べない役もある。でも、どう演じるかは——選べる。それだけじゃなくて、もしかしたら、次に何を選ぶかも」</p>
+
+<p>奈緒はゆっくりと翔太を見た。</p>
+
+<p class="dialogue">「それは、現実の話ですか。それとも、ここでの話？」</p>
+
+<p>翔太は微笑んだ。</p>
+
+<p class="dialogue">「……わからないです。区別がつかなくなってきました」</p>
+
+<p>奈緒は少しの間、翔太を見てから——はじめて、柔らかく笑った。</p>
+
+  </div>
+</article>
+
+<!-- ===== EPILOGUE ===== -->
+<section class="epilogue" id="epilogue">
+  <div class="epilogue-inner">
+    <div class="chapter-visual visual-epilogue" style="margin-bottom:3rem;height:200px;">
+      <div class="visual-epilogue curtain-rise-l"></div>
+      <div class="visual-epilogue curtain-rise-r"></div>
+      <div class="visual-epilogue stage-glow"></div>
+    </div>
+    <div class="epilogue-label">— Epilogue —</div>
+    <h2 class="epilogue-title">明日の役</h2>
+    <div class="chapter-divider" style="margin-bottom:3rem;"></div>
+    <div class="prose">
+
+<p>幕が、また上がる。</p>
+
+<p>翔太は紅い絨毯の上に座り、静かに、次を待っている。</p>
+
+<p>周囲には、また数百人の人々がいる。さっきとは違う顔触れも混じっている。初めてここに来た者の、あの緊張した顔。何度も繰り返してきた者の、深い静けさ。次こそは、という者の、密かな決意。</p>
+
+<p>翔太は思う。</p>
+
+<p>この劇場は——いつ終わるのだろうか。</p>
+
+<p>おそらく、終わらない。あるいは、終わることが目的ではないのかもしれない。三つの役を演じ終えた先に、また三つの役がある。舞台は続いていく。日常が続くように。</p>
+
+<p>翔太は、自分の手を見た。</p>
+
+<p>老人の手を握った手。男の子の頭を撫でた手。元妻の手を、最後に握ったのはいつだったろう。</p>
+
+<p>この手で、これからどんな役を演じるか。</p>
+
+<p class="inner-voice">——選べる。</p>
+
+<p>翔太にはそれが、少しずつ、実感として育ってきていた。</p>
+
+<p>「正しくあること」より「見ること」を選べる。「距離を置くこと」より「近づくこと」を選べる。「台本を読むこと」より「台本を捨てること」を選べる。</p>
+
+<p>それは、小さな選択だ。劇的なことは、何もない。ただ——毎朝、その小さな選択を積み重ねていく。それが演じることであり、生きることなのかもしれない。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>奈緒が隣に座った。</p>
+
+<p class="dialogue">「決まりましたか、次の役」</p>
+
+<p class="dialogue">「決まりました」</p>
+
+<p class="dialogue">「何ですか？」</p>
+
+<p>翔太は少し間を置いた。</p>
+
+<p class="dialogue">「……自分自身、だと思います。今まで一番うまく演じられていなかった役が、それなので」</p>
+
+<p>奈緒はしばらく翔太を見てから、静かに言った。</p>
+
+<p class="dialogue">「難しい役ですね」</p>
+
+<p class="dialogue">「一番難しい役だと思います」</p>
+
+<p class="dialogue">「でも——選んだんですね」</p>
+
+<p class="dialogue">「はい」</p>
+
+<p>翔太は頷いた。</p>
+
+<p>館内放送が流れ始めた。次の幕のアナウンスだ。</p>
+
+<p>人々が、静かに立ち上がる。</p>
+
+<p>翔太も立ち上がった。</p>
+
+<p>足の裏に、紅い絨毯のあの弾力が伝わってくる。沈んで、また戻ってくる。その感触が、翔太にはなぜか——大地のように感じられた。</p>
+
+<p>どんな役を与えられても、どんな役を選んでも——この地面がある。</p>
+
+<p>そこから歩き出せる。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>翔太は歩き出しながら、ふと思った。</p>
+
+<p>この劇場の外——現実という舞台では、誰もがリハーサルなしで役を演じている。</p>
+
+<p>朝起きて、顔を洗い、電車に乗り、誰かと言葉を交わし、食事をし、眠る。その一つひとつが、役だ。</p>
+
+<p>父親という役。息子という役。友人という役。他人という役。</p>
+
+<p>通りすがりの人間でさえ——誰かの物語には、重要な登場人物かもしれない。</p>
+
+<p>だとすれば——</p>
+
+<p>今日、翔太がすれ違う人々は、みな誰かの物語の中を生きている。疲れた顔のサラリーマンも。ベビーカーを押す若い母親も。スマートフォンを見つめたまま歩く若者も。</p>
+
+<p>それぞれが、与えられた役を、選んだ役を、リハーサルなしで演じている。</p>
+
+<p>誰ひとり、完璧ではない。</p>
+
+<p>何度かやり直す者もいる。</p>
+
+<p>泣き崩れる者もいる。</p>
+
+<p>だが——舞台は続く。</p>
+
+<p>そして翔太は今、確かに思っていた。</p>
+
+<p>自分の役を演じながら——他者の物語に、少しだけ、そっと関わることができると。</p>
+
+<p>正しい言葉をかけることではない。ただ、隣に座ること。ただ、手を置くこと。ただ、見ていること。</p>
+
+<p>それだけで、誰かの舞台が少し——続きやすくなるかもしれない。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>幕が上がる。</p>
+
+<p>照明が、やわらかく降り注ぐ。</p>
+
+<p>翔太は、舞台に出た。</p>
+
+<p>どこにでもある日常の景色が、広がっている。</p>
+
+<p>朝の光。</p>
+
+<p>人々の息遣い。</p>
+
+<p>どこかで誰かが笑い、どこかで誰かが泣いている。</p>
+
+<p>それがすべて——ひとつの、大きな舞台だ。</p>
+
+<p>翔太は深く息を吸った。</p>
+
+<p>そして——歩き出した。</p>
+
+<p>リハーサルはない。</p>
+
+<p>台本もない。</p>
+
+<p>あるのはただ、今日という日と、そこで出会う人々と、自分という役者だけだ。</p>
+
+<p>それで、十分だった。</p>
+
+<p style="text-align:center;text-indent:0;color:rgba(169,137,90,0.6);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;margin-top:3em;">— 了 —</p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHARACTERS ===== -->
+<section class="characters" id="characters">
+  <div class="characters-inner">
+    <div class="section-label">— Characters —</div>
+    <h2 class="section-title">登場人物</h2>
+    <div class="section-divider"></div>
+
+    <div class="char-grid">
+
+      <div class="char-card">
+        <div class="char-num">01</div>
+        <div class="char-body">
+          <div class="char-name">宮下 翔太<span class="char-name-en">Shota Miyashita</span></div>
+          <div class="char-role">主人公 / 38歳 / 会社員</div>
+          <div class="char-desc">
+            <p>中堅広告代理店に勤める企画職。三年前に離婚し、現在は都内のワンルームに独り暮らし。仕事には精通しているが、人との関係において常に「正しさ」を優先してきた。感情より論理を、距離より効率を選んできた男。</p>
+            <p>物事をいつも少し斜に構えて見る癖がある。それは傷つかないための、三十八年かけて身につけた防衛本能だったかもしれない。劇場の舞台で「父親」の役を演じたとき、生まれて初めて——台本なしで誰かを見た。</p>
+          </div>
         </div>
+      </div>
 
-        <button type="submit" id="submitBtn">予約を確認する</button>
-    </form>
-</div>
+      <div class="char-card">
+        <div class="char-num">02</div>
+        <div class="char-body">
+          <div class="char-name">桐島 奈緒<span class="char-name-en">Nao Kirishima</span></div>
+          <div class="char-role">35歳 / 元保育士・専業主婦</div>
+          <div class="char-desc">
+            <p>七歳の息子を持つ母親。結婚を機に仕事を辞め、以来ずっと「良い母親」であることに全力を注いできた。育児書を読み込み、食事に気を配り、習い事のスケジュールを管理し——完璧な「母親像」を演じ続けた。</p>
+            <p>だが息子の本当の顔を、彼女は見ていなかった。劇場で「母親の役」を三回繰り返しながら気づいていく——愛とは、正しくあることではなく、見ることだ、と。泣き崩れるほど傷つきながらも、再び立ち上がれる強さを持つ人。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-num">03</div>
+        <div class="char-body">
+          <div class="char-name">舞台監督<span class="char-name-en">The Stage Director</span></div>
+          <div class="char-role">年齢不詳 / この劇場の番人</div>
+          <div class="char-desc">
+            <p>黒い衣装をまとい、舞台袖に立つ人物。感情なく事実を告げ、罰を与えるのではなく「もう一度の機会」を示す。その正体は明かされない。神でも閻魔でも死神でもなく、ただ——この舞台が正しく機能するための存在。</p>
+            <p>彼の言葉は常に少ない。だがひとことひとことが、矢のように核心を貫く。合格か不合格かではなく、「理解が深まるまで繰り返す」という在り方が、彼のすべての哲学を語っている。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-num">04</div>
+        <div class="char-body">
+          <div class="char-name">黒コートの男<span class="char-name-en">The Man in Black</span></div>
+          <div class="char-role">40代 / 悪役専門の役者</div>
+          <div class="char-desc">
+            <p>衣装は常に黒。演じる役は「部下を追い詰める上司」「人を裏切る友人」「冷酷な権力者」——いつも悪役だ。しかし衣装を脱いだ素顔は穏やかで、眼差しに知性と慈しみがある。</p>
+            <p>「悪役がいるから、主役が主役になれる」という言葉は、彼の長年の哲学だ。誰かに嫌われることを引き受けながら、それでも全力で役を演じる。その覚悟の深さは、主役を演じる誰よりも——静かで、重い。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-num">05</div>
+        <div class="char-body">
+          <div class="char-name">途中退場の若者<span class="char-name-en">The One Who Left</span></div>
+          <div class="char-role">20代 / 舞台を去った者</div>
+          <div class="char-desc">
+            <p>第五章の薄明かりの部屋にいる。整った顔立ちをしているが、その目だけがひどく老いている。苦しさから逃れようと、幕が下りる前に舞台を去った。</p>
+            <p>「逃げたら楽になると思った。でも——ここは、もっとつらかった」。声なき言葉でそう語る彼は、舞台の途中退場が解決にならないことを、身をもって伝える存在だ。しかし舞台監督は言う。「戻ってきていい」と。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-num">06</div>
+        <div class="char-body">
+          <div class="char-name">男の子<span class="char-name-en">The Boy</span></div>
+          <div class="char-role">小学生 / 翔太の「息子」</div>
+          <div class="char-desc">
+            <p>夕暮れの公園でブランコに乗り、翔太を「おとうさん」と呼んで駆け寄ってきた少年。現実の翔太には子どもがいない。だからこそ、この役は翔太にとって——もっとも遠く、もっとも深く刺さった。</p>
+            <p>「泣かなかった、でも、さみしかった」——その一言が、この物語で最も小さく、最も重い台詞だ。強がりと本音の間で揺れる子どもの正直さが、大人の鎧を静かに溶かしていく。</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== SPINOFF ===== -->
+<section class="spinoff" id="spinoff">
+  <div class="spinoff-inner">
+    <div class="section-label">— Side Story —</div>
+    <h2 class="section-title">幕間短編<br><span style="font-size:0.7em;letter-spacing:0.1em;">黒コートの男の独白</span></h2>
+    <div class="section-divider"></div>
+    <div class="prose spinoff-prose">
+
+<p>私が最初にここへ来たのは、もう何十回前のことか、数えるのをやめた。</p>
+
+<p>最初の役は「優しい父親」だった。</p>
+
+<p>それは悪くなかった。子どもに笑いかけ、手を引き、夕暮れを一緒に歩く。温かい役だった。私はその役が好きで、全力で演じた。舞台監督にも「よかった」と言われた。</p>
+
+<p>次も、その次も——私はいつも「良い役」を選んだ。</p>
+
+<p>医者。救助隊員。恩師。</p>
+
+<p>どれも手ごたえがあった。相手が感謝してくれた。場面が明るくなった。私は充実していた。</p>
+
+<p>だがあるとき、舞台監督が私に言った。</p>
+
+<p class="dialogue">「君は、善い役しか演じていない」</p>
+
+<p class="dialogue">「悪いことですか」と私は訊いた。</p>
+
+<p class="dialogue">「悪くはない。しかし——君が善い役を選び続けることで、誰かが悪い役を担わされている。その人間が、消耗している」</p>
+
+<p>私は黙った。</p>
+
+<p>そんなことは考えたこともなかった。善い役を選ぶのは、当然だと思っていた。好んで悪役を演じる者などいないだろう——そう思っていた。</p>
+
+<p>だが舞台監督は続けた。</p>
+
+<p class="dialogue">「舞台は、すべての役が揃って成立する。善も悪も、光も影も。君が引き受けないものを、誰かが必ず引き受けている」</p>
+
+<p>翌幕から、私は悪役を選んだ。</p>
+
+<p>最初は、正直、つらかった。</p>
+
+<p>自分が追い詰めた相手が傷つく。泣く。倒れる。そのたびに、私の中で何かが痛んだ。これは本当に必要なことなのか、と思った。</p>
+
+<p>だが——ある幕で、私に追い詰められた若い女性が、ぼろぼろになりながらも立ち上がった。</p>
+
+<p>そのとき彼女の目に、なにか光るものが宿った。</p>
+
+<p>私への怒りでも、憎しみでもない。</p>
+
+<p>もっと深いところから来る、何かだった。</p>
+
+<p class="inner-voice">——自分が、どういう人間か。</p>
+
+<p>彼女はその瞬間、それを知ったのだろうと思う。</p>
+
+<p>私が追い詰めなければ、彼女はそれを知らないまま幕を降りていた。</p>
+
+<p>それからは、怖くなくなった。</p>
+
+<p>悪役とは、相手を壊すためにあるのではない。相手が自分を知るための——鏡だ。</p>
+
+<p>今日も私は黒いコートを羽織る。</p>
+
+<p>冷たい笑みを作る。</p>
+
+<p>幕の向こうで、誰かが待っている。</p>
+
+<p>その人が、今日——自分を知るかもしれない。</p>
+
+<p>それが、私の役だ。</p>
+
+<p>そして——私は、それを誇りに思っている。</p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== AFTERWORD ===== -->
+<section class="afterword" id="afterword">
+  <div class="afterword-inner">
+    <div class="section-label">— Afterword —</div>
+    <h2 class="section-title">あとがき</h2>
+    <div class="section-divider"></div>
+    <div class="prose afterword-prose">
+
+<p>この物語は、一つの夢から生まれた。</p>
+
+<p>大きな劇場と、紅い絨毯と、リハーサルなしで幕が上がる舞台。そこに集められた、数百人の人々。目覚めてからも消えない、あまりにも鮮明な夢だった。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>この物語には、ひとつの考えが根っこにある。</p>
+
+<p>私たちは——自分で望んで、この人生を選んだのかもしれない、という考えだ。</p>
+
+<p>生まれた瞬間に忘れてしまう。だから証明できない。でも——もしそうだとしたら、今のこの苦しさにも、意味があるかもしれない。うまくいかなかったあの日にも。繰り返してしまうあのパターンにも。</p>
+
+<p>舞台監督は言っていた。「繰り返すことは罰ではなく、機会だ」と。</p>
+
+<p>同じことがくり返し起きるとき——そこに、まだ学びが残っているのかもしれない。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>他者は変えられない。</p>
+
+<p>でも——自分が変わることで、見えてくるものは変わる。関わり方が変わる。相手の顔が、はじめて見えることがある。奈緒が台本を捨てて、ようやく子どもの涙に気づいたように。</p>
+
+<p>思い通りにならない人生は——でも、だからこそ深く演じられる。台本通りにいかない場面が、あなたを本当の意味で主役にする。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>この物語には、もうひとつ、大切なことが書いてある。</p>
+
+<p>途中で降りることについて、だ。</p>
+
+<p>あの薄明かりの部屋の若者は言っていた。「逃げたら楽になると思った。でも——ここは、もっとつらかった」と。</p>
+
+<p>舞台を去っても、苦しみは消えない。形を変えるだけだ。そして——あなたが抜けた穴の前で、立ち尽くす人間が必ずいる。あなたの存在は、あなたが思っているよりずっと多くの人の舞台につながっている。</p>
+
+<p>もし今、舞台を降りたいと感じている人がいたら——どうか、この言葉だけ覚えていてほしい。</p>
+
+<p>舞台は、待っている。戻ってきていい。何度でも、やり直せる。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>誰かの手を、最後に握ったのはいつだろう。誰かの顔を、台本なしで見たのはいつだろう。</p>
+
+<p>完璧な役者などいない。演じきれずに繰り返す者がいる。泣き崩れる者もいる。それでもまた立ち上がる者がいる。それが——人間だと思う。</p>
+
+<p class="scene-break">* * *</p>
+
+<p>最後に。</p>
+
+<p>あなたが今日、どんな役を演じているとしても——それが望んだ役でも、与えられた役でも——あなたが今日ここにいるその事実が、誰かの物語を続かせている。</p>
+
+<p>明日の幕が、あなたにとって——少しだけ、優しく上がりますように。</p>
+
+<p style="text-align:right;text-indent:0;color:rgba(169,137,90,0.55);font-size:0.9rem;margin-top:3em;letter-spacing:0.1em;">――作者</p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-title">幕が上がるとき</div>
+  <div class="footer-sub">When the Curtain Rises &nbsp;|&nbsp; A dream-born story</div>
+</footer>
+
+<a class="back-top" id="backTop" href="#" title="トップへ">↑</a>
 
 <script>
-    // ★重要：ここにメモしたGASのURLを貼り付けてください
-    const GAS_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbx1xQzdKXhJaYZnwtHVvu_hS64Lr--hYpfWO3PH6dn_kFf2OVOlZPNG6bYTJa_z5Nrr/exec/exec";
-
-    document.getElementById('reservationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "送信中...";
-        btn.disabled = true;
-
-        const formData = new FormData(this);
-        const data = {};
-        formData.forEach((value, key) => { data[key] = value });
-
-        // GASへデータを飛ばす処理
-        fetch(GAS_URL, {
-            method: "POST",
-            body: JSON.stringify(data),
-            mode: "no-cors" // これによりブラウザのセキュリティ制限を回避します
-        }).then(() => {
-            alert("ありがとうございます。送信が完了しました。");
-            btn.innerText = "送信完了";
-        }).catch(err => {
-            alert("エラーが発生しました。");
-            btn.disabled = false;
-            btn.innerText = "再試行する";
-        });
-    });
+  // Progress bar
+  const bar = document.getElementById('progressBar');
+  const top = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    bar.style.width = pct + '%';
+    top.classList.toggle('visible', h.scrollTop > 400);
+  });
+  top.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 </script>
 
 </body>
+</html>
+
 </html>
